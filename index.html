@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>Hello World!</title>
+    </head>
+    <body>
+      <h1>升级包制作工具</h1>
+      <p>老版本路径</p>
+      <input type="text" id="oldVersion">
+      <p>新版本</p>
+      <input type="text" id="newVersion">
+      <p>输出路径</p>
+      <input type="text" id="outputDir">
+      <br>
+      <p><button id="btn">生成升级包</button></p>
+
+      <script>
+        var app = require('./test');
+        console.log(app)
+        document.querySelector('#btn').onclick = () => {
+          var oldVersion = document.querySelector('#oldVersion');
+          console.log(oldVersion.value)
+        }
+      </script>
+    </body>
+  </html>

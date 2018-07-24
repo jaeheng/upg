@@ -1,0 +1,17 @@
+{
+  "name": "upg",
+  "version": "1.0.0",
+  "description": "make upgrade package",
+  "main": "index.js",
+  "dependencies": {
+    "shelljs": "^0.8.2"
+  },
+  "devDependencies": {
+    "electron": "^2.0.5"
+  },
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "jaeheng",
+  "license": "MIT"
+}
