@@ -10,7 +10,8 @@
     "electron": "^2.0.5"
   },
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-packager . upg --win --out ../ --arch=x64 --app-version=0.0.1 --electron-version=2.0.5 --icon=favicon.ico"
   },
   "author": "jaeheng",
   "license": "MIT"

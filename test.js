@@ -130,13 +130,33 @@ function copy(src, dst) {
 	}
 }
 
+/**
+ * 处理返回
+ */
+function returnHandle (state, msg) {
+	return {
+		state: state,
+		msg: msg
+	}
+}
+
 function run (srcDir, updateDir, $outputDir) {
 	var $srcTree = [];
-	readDirSync(srcDir, $srcTree);
-	sortArray($srcTree);
-
 	var $updateTree = [];
-	readDirSync(updateDir, $updateTree);
+	$outputDir += DS + 'dist'
+	
+	try {
+		readDirSync(srcDir, $srcTree);
+		readDirSync(updateDir, $updateTree);
+		console.log('获取文件树成功');
+	} catch (err) {
+		var msg = '获取文件树失败: ' + err;
+		console.log(msg);
+		return returnHandle(0, msg);
+	}
+
+
+	sortArray($srcTree);
 	sortArray($updateTree);
 
 	// console.log(util.inspect($srcTree, false, null));
@@ -147,16 +167,35 @@ function run (srcDir, updateDir, $outputDir) {
 	var $notSamePaths = [];
 
 
-	compareArray($srcTree, $updateTree, $notSamePaths, updateDir);
+	try {
+		compareArray($srcTree, $updateTree, $notSamePaths, updateDir);
+		console.log('对比树，获取md5不同的文件树');
+	} catch (err) {
+		var msg = '对比树失败:' + err;
+		console.log(msg);
+		return returnHandle(0, msg);
+	}
 
 	// console.log(JSON.stringify($notSamePaths));
 	// return false;
 
 	// console.log(JSON.stringify($notSamePaths));
-	$notSamePaths.map(function (item) {
-		copy(srcDir + item, $outputDir + item);
-		// console.log(item)
-	})	
+	console.log('开始生成升级包');
+
+	try {
+		$notSamePaths.map(function (item) {
+			copy(srcDir + item, $outputDir + item);
+			// console.log(item)
+		});
+		var msg = '生成升级包成功!';
+		console.log(msg);
+		return returnHandle(1, msg);
+	} catch (err) {
+		var msg = '生成升级包失败:' + err;
+		console.log(msg);
+		return returnHandle(0, msg);
+	}
+		
 }
 
 exports = module.exports = {

@@ -2,26 +2,179 @@
   <html>
     <head>
       <meta charset="UTF-8">
-      <title>Hello World!</title>
+      <title>程序源码升级包制作工具! by jaeheng</title>
     </head>
+    <style>
+      * {
+        margin: 0;
+      }
+      html, body {
+        height: 100%;
+      }
+      body {
+        background: url('./static/bg.jpg') no-repeat;
+        background-position: top;
+        background-size: cover;
+        overflow: hidden;
+      }
+      .title {
+        text-align: center;
+        line-height: 3;
+        font-size: 28px;
+        color: #fff;
+        margin-top: 20px;
+      }
+      .main {
+        padding: 20px 0;
+        width: 300px;
+        margin: 0 auto;
+        box-sizing: border-box;
+      }
+      .form-group {
+        margin-bottom: 1em;
+      }
+      .form-group label {
+        display: block;
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 10px;
+      }
+      .form-group input {
+        height: 30px;
+        padding: 8px 10px;
+        width: 100%;
+        border-radius: 2px;
+        box-sizing: border-box;
+        border: 1px solid #ddd;
+        font-size: 12px;
+      }
+      .form-group input:focus {
+        border-color: #3c8ee2;
+        outline: none;
+      }
+      #btn {
+        background: #3c8ee2;
+        color: #fff;
+        border: none;
+        width: 100%;
+        height: 32px;
+        display: block;
+        padding: 5px;
+        border-radius: 2px;
+        font-size: 12px;
+        margin-top: 40px;
+      }
+      #btn:hover {
+        background: #5a9bde;
+        cursor: pointer;
+      }
+      .info {
+        font-size: 12px;
+        margin-top: 28px;
+        color: #fff;
+      }
+      .footer {
+        text-align: center;
+        font-size: 12px;
+        cursor: pointer;
+        color: #fff;
+        position: fixed;
+        bottom: 10px;
+        left: 0;
+        right: 0;
+      }
+      .footer span {
+        margin: 0 5px;
+      }
+    </style>
     <body>
-      <h1>升级包制作工具</h1>
-      <p>老版本路径</p>
-      <input type="text" id="oldVersion">
-      <p>新版本</p>
-      <input type="text" id="newVersion">
-      <p>输出路径</p>
-      <input type="text" id="outputDir">
-      <br>
-      <p><button id="btn">生成升级包</button></p>
+      <h1 class="title">升级包制作工具</h1>
+      <div class="main">
+        <div class="form-group">
+          <label>旧版本源码路径</label>
+          <input type="text" id="oldVersion" placeholder="点击选择文件夹">
+        </div>
+
+        <div class="form-group">
+          <label>新版本源码路径</label>
+          <input type="text" id="newVersion" placeholder="点击选择文件夹">
+        </div>
+        
+        <div class="form-group">
+          <label>输出路径 (程序会将升级包输出到该目录下dist目录)</label>
+          <input type="text" id="outputDir" placeholder="点击选择文件夹">
+        </div>
+        
+        <button id="btn">生成升级包</button>
+
+        <div class="footer">
+          <span>&copy;Copyright 2018 jaeheng</span>
+          <span class="link" onclick="openUrl('https://blog.zhangziheng.com')">提交bug</span>
+        </div>
+      </div>
 
       <script>
         var app = require('./test');
-        console.log(app)
-        document.querySelector('#btn').onclick = () => {
-          var oldVersion = document.querySelector('#oldVersion');
-          console.log(oldVersion.value)
+        var path = require('path');
+        const shell = require('electron').shell;
+        const os = require('os');
+        const DS = path.sep;
+        const dialog = require('electron').remote.dialog;
+
+        var oldVersion = document.getElementById('oldVersion');
+        var newVersion = document.getElementById('newVersion');
+        var outputDir = document.getElementById('outputDir');
+        var submitBtn = document.getElementById('btn');
+        
+        submitBtn.onclick = () => {
+          $oldVersion = oldVersion.value;
+          $newVersion = newVersion.value;
+          $outputDir = outputDir.value;
+          if ($oldVersion == '' || $newVersion == '' || $outputDir == '') {
+            alert('三个框都不可为空');
+            return false;
+          }
+
+          submitBtn.innerText = '正在生成升级包...';
+          submitBtn.setAttribute('disabled', true);
+          var result = app.run($oldVersion, $newVersion, $outputDir);
+          alert(result.msg);
+          console.log(result.state);
+          if (result.state) {
+            console.log($outputDir);
+            shell.showItemInFolder($outputDir + DS + 'dist');
+            window.location.reload();
+          }
+
+          submitBtn.innerText = '生成升级包';
+          submitBtn.setAttribute('disabled', false);
         }
+
+        // 浏览器打开链接
+        function openUrl(url) {
+          shell.openExternal(url);
+        }
+
+        oldVersion.addEventListener('click', function (event) {
+          var dirs = dialog.showOpenDialog({ properties: [ 'openDirectory' ]});
+          if (dirs && dirs[0]) {
+            oldVersion.value = dirs[0];
+          }
+        });
+
+        newVersion.addEventListener('click', function (event) {
+          var dirs = dialog.showOpenDialog({ properties: [ 'openDirectory' ]});
+          if (dirs && dirs[0]) {
+            newVersion.value = dirs[0];
+          }
+        });
+
+        outputDir.addEventListener('click', function (event) {
+          var dirs = dialog.showOpenDialog({ properties: [ 'openDirectory' ]});
+          if (dirs && dirs[0]) {
+            outputDir.value = dirs[0];
+          }
+        });
       </script>
     </body>
   </html>
