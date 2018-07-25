@@ -180,11 +180,12 @@ function run (srcDir, updateDir, $outputDir) {
 	// return false;
 
 	// console.log(JSON.stringify($notSamePaths));
+	// return false;
 	console.log('开始生成升级包');
 
 	try {
 		$notSamePaths.map(function (item) {
-			copy(srcDir + item, $outputDir + item);
+			copy(updateDir + item, $outputDir + item);
 			// console.log(item)
 		});
 		var msg = '生成升级包成功!';

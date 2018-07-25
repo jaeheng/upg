@@ -86,6 +86,14 @@
       .footer span {
         margin: 0 5px;
       }
+      #showIng {
+        visibility: hidden;
+        font-size: 14px;
+        color: #fff;
+      }
+      #btn[disabled] {
+        background: #ccc;
+      }
     </style>
     <body>
       <h1 class="title">升级包制作工具</h1>
@@ -104,8 +112,12 @@
           <label>输出路径 (程序会将升级包输出到该目录下dist目录)</label>
           <input type="text" id="outputDir" placeholder="点击选择文件夹">
         </div>
+
+        <p id="showIng">
+          正在生成升级包...
+        </p>
         
-        <button id="btn">生成升级包</button>
+        <button id="btn" type="button">生成升级包</button>
 
         <div class="footer">
           <span>&copy;Copyright 2018 jaeheng</span>
@@ -125,6 +137,7 @@
         var newVersion = document.getElementById('newVersion');
         var outputDir = document.getElementById('outputDir');
         var submitBtn = document.getElementById('btn');
+        var showIng = document.getElementById('showIng');
         
         submitBtn.onclick = () => {
           $oldVersion = oldVersion.value;
@@ -135,19 +148,30 @@
             return false;
           }
 
-          submitBtn.innerText = '正在生成升级包...';
-          submitBtn.setAttribute('disabled', true);
-          var result = app.run($oldVersion, $newVersion, $outputDir);
-          alert(result.msg);
-          console.log(result.state);
-          if (result.state) {
-            console.log($outputDir);
-            shell.showItemInFolder($outputDir + DS + 'dist');
-            window.location.reload();
-          }
+          console.log(showIng)
+          console.log(showIng.style.visibility)
+          showIng.innerHTML = '正在生成升级包...'
+          showIng.style.visibility = 'visible'
+          submitBtn.disabled = true
 
-          submitBtn.innerText = '生成升级包';
-          submitBtn.setAttribute('disabled', false);
+          setTimeout(function () {
+            var result = app.run($oldVersion, $newVersion, $outputDir);
+            showIng.innerHTML = result.msg;
+
+            console.log(result.state);
+            if (result.state) {
+              console.log($outputDir);
+              shell.showItemInFolder($outputDir + DS + 'dist');
+              // window.location.reload();
+            }
+
+            submitBtn.disabled = false
+
+            setTimeout(function () {
+              showIng.style.visibility = 'hidden'
+            }, 3000)
+          }, 1000)
+          
         }
 
         // 浏览器打开链接
